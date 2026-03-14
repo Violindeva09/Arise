@@ -6,9 +6,9 @@ This app gamifies real-world tasks as quests, tracks stats, and rewards discipli
 
 ---
 
-\🚀 Vision
+🚀 Vision
 
-\To create a systematic, stat-based life management system where users:
+To create a systematic, stat-based life management system where users:
 
 \- Complete quests (daily tasks)
 
@@ -28,14 +28,9 @@ This app gamifies real-world tasks as quests, tracks stats, and rewards discipli
 
 &nbsp; - Charisma
 
-
-
 ---
 
-
-
-\🛠️ Tech Stack
-
+🛠️ Tech Stack
 
 
 \- Flutter
@@ -48,13 +43,9 @@ This app gamifies real-world tasks as quests, tracks stats, and rewards discipli
 
 \- Firebase (planned)
 
-
-
 ---
 
-
-
-\📌 Current Features (MVP)
+📌 Current Features (MVP)
 
 
 
@@ -70,7 +61,7 @@ This app gamifies real-world tasks as quests, tracks stats, and rewards discipli
 ---
 
 
-\## 🔥 Future Roadmap
+🔥 Future Roadmap
 
 \- Achievement system
 
@@ -86,7 +77,7 @@ This app gamifies real-world tasks as quests, tracks stats, and rewards discipli
 ---
 
 
-\🧠 Project Philosophy
+🧠 Project Philosophy
 
 ARISE is more than an app.
 
@@ -102,7 +93,7 @@ It is a systematic life management system based on:
 
 ---
 
-\## 👤 Developer
+👤 Developer
 
 Devansh  
 
@@ -110,7 +101,7 @@ B.Tech AI | Builder | Musician
 
 ---
 
-\📦 Setup Instructions
+📦 Setup Instructions
 
 ```bash
 
