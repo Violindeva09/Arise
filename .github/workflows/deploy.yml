@@ -196,31 +196,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download APK
+      - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: release-apk
-          
-      - name: Download Windows Build
-        uses: actions/download-artifact@v4
-        with:
-          name: release-windows
-          
-      - name: Download macOS Build
-        uses: actions/download-artifact@v4
-        with:
-          name: release-macos
-          
-      - name: Download Linux Build
-        uses: actions/download-artifact@v4
-        with:
-          name: release-linux
-          
-      - name: Download Web Build
-        uses: actions/download-artifact@v4
-        with:
-          name: release-web
-          
+          path: .
+          merge-multiple: true
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
