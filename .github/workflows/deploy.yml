@@ -161,10 +161,37 @@ jobs:
         with:
           name: release-web
           path: Arise_Web.zip
+          
+      - name: Upload Web Files for Pages
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-files
+          path: build/web
+
+  deploy-web:
+    name: Deploy to GitHub Pages
+    needs: build-web
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Web Files
+        uses: actions/download-artifact@v4
+        with:
+          name: web-files
+          path: web-dist
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web-dist
 
   create-release:
     name: Create GitHub Release
-    needs: [build-android, build-windows, build-macos, build-linux, build-web]
+    needs: [build-android, build-windows, build-macos, build-linux, build-web, deploy-web]
     runs-on: ubuntu-latest
     permissions:
       contents: write
