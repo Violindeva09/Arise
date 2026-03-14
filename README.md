@@ -1,8 +1,8 @@
-\⚔️ ARISE - Real World Level Up System
+⚔️ ARISE - Real World Level Up System
 
-\ARISE is a gamified productivity and self-improvement system inspired by the Solo Leveling series.
+ARISE is a gamified productivity and self-improvement system inspired by the Solo Leveling series.
 
-\This app gamifies real-world tasks as quests, tracks stats, and rewards discipline like an RPG character development system.
+This app gamifies real-world tasks as quests, tracks stats, and rewards discipline like an RPG character development system.
 
 ---
 
