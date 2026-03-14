@@ -1,26 +1,14 @@
-\# ⚔️ ARISE - Real World Level Up System
+\⚔️ ARISE - Real World Level Up System
 
+\ARISE is a gamified productivity and self-improvement system inspired by the Solo Leveling series.
 
-
-ARISE is a gamified productivity and self-improvement system inspired by the Solo Leveling series.
-
-
-
-This app gamifies real-world tasks as quests, tracks stats, and rewards discipline like an RPG character development system.
-
-
+\This app gamifies real-world tasks as quests, tracks stats, and rewards discipline like an RPG character development system.
 
 ---
 
+\🚀 Vision
 
-
-\## 🚀 Vision
-
-
-
-To create a systematic, stat-based life management system where users:
-
-
+\To create a systematic, stat-based life management system where users:
 
 \- Complete quests (daily tasks)
 
@@ -46,7 +34,7 @@ To create a systematic, stat-based life management system where users:
 
 
 
-\## 🛠️ Tech Stack
+\🛠️ Tech Stack
 
 
 
@@ -66,7 +54,7 @@ To create a systematic, stat-based life management system where users:
 
 
 
-\## 📌 Current Features (MVP)
+\📌 Current Features (MVP)
 
 
 
@@ -79,14 +67,10 @@ To create a systematic, stat-based life management system where users:
 \- Leveling system logic
 
 
-
 ---
 
 
-
 \## 🔥 Future Roadmap
-
-
 
 \- Achievement system
 
@@ -99,22 +83,14 @@ To create a systematic, stat-based life management system where users:
 \- Cloud syncing
 
 
-
 ---
 
 
-
-\## 🧠 Project Philosophy
-
-
+\🧠 Project Philosophy
 
 ARISE is more than an app.
 
-
-
 It is a systematic life management system based on:
-
-
 
 \- Discipline
 
@@ -124,29 +100,17 @@ It is a systematic life management system based on:
 
 \- RPG character development psychology
 
-
-
 ---
 
-
-
 \## 👤 Developer
-
-
 
 Devansh  
 
 B.Tech AI | Builder | Musician  
 
-
-
 ---
 
-
-
-\## 📦 Setup Instructions
-
-
+\📦 Setup Instructions
 
 ```bash
 
@@ -157,4 +121,3 @@ cd flutter\_arise
 flutter pub get
 
 flutter run
-
