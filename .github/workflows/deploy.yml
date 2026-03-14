@@ -1,0 +1,209 @@
+name: Multi-Platform Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags like v1.0.0
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4' # Match your local version
+          channel: 'stable'
+          
+      - name: Get dependencies
+        run: flutter pub get
+        
+      - name: Build APK
+        run: flutter build apk --release
+        
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-windows:
+    name: Build Windows EXE
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4'
+          channel: 'stable'
+          
+      - name: Enable Windows Build
+        run: flutter config --enable-windows-desktop
+        
+      - name: Get dependencies
+        run: flutter pub get
+        
+      - name: Build Windows
+        run: flutter build windows --release
+        
+      - name: Archive Windows Build
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath build\Arise_Windows.zip
+          
+      - name: Upload Windows Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: build/Arise_Windows.zip
+
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4'
+          channel: 'stable'
+          
+      - name: Get dependencies
+        run: flutter pub get
+        
+      - name: Build macOS
+        run: flutter build macos --release
+        
+      - name: Archive macOS Build
+        run: |
+          cd build/macos/Build/Products/Release
+          zip -r ../../../../Arise_MacOS.zip "Arise System.app"
+          
+      - name: Upload macOS Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-macos
+          path: Arise_MacOS.zip
+
+  build-linux:
+    name: Build Linux App
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+          
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4'
+          channel: 'stable'
+          
+      - name: Enable Linux Build
+        run: flutter config --enable-linux-desktop
+        
+      - name: Get dependencies
+        run: flutter pub get
+        
+      - name: Build Linux
+        run: flutter build linux --release
+        
+      - name: Archive Linux Build
+        run: |
+          cd build/linux/x64/release/bundle
+          zip -r ../../../../../Arise_Linux_x64.zip .
+          
+      - name: Upload Linux Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-linux
+          path: Arise_Linux_x64.zip
+
+  build-web:
+    name: Build Web App
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4'
+          channel: 'stable'
+          
+      - name: Get dependencies
+        run: flutter pub get
+        
+      - name: Build Web
+        run: flutter build web --release --base-href "/Arise-Flutter-/" # Adjust to your GitHub repo name
+        
+      - name: Archive Web Build
+        run: |
+          cd build/web
+          zip -r ../../Arise_Web.zip .
+          
+      - name: Upload Web Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-web
+          path: Arise_Web.zip
+
+  create-release:
+    name: Create GitHub Release
+    needs: [build-android, build-windows, build-macos, build-linux, build-web]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: release-apk
+          
+      - name: Download Windows Build
+        uses: actions/download-artifact@v4
+        with:
+          name: release-windows
+          
+      - name: Download macOS Build
+        uses: actions/download-artifact@v4
+        with:
+          name: release-macos
+          
+      - name: Download Linux Build
+        uses: actions/download-artifact@v4
+        with:
+          name: release-linux
+          
+      - name: Download Web Build
+        uses: actions/download-artifact@v4
+        with:
+          name: release-web
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app-release.apk
+            Arise_Windows.zip
+            Arise_MacOS.zip
+            Arise_Linux_x64.zip
+            Arise_Web.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
