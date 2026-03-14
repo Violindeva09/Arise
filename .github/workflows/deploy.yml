@@ -149,7 +149,7 @@ jobs:
         run: flutter pub get
         
       - name: Build Web
-        run: flutter build web --release --base-href "/Arise-Flutter-/" # Adjust to your GitHub repo name
+        run: flutter build web --release --base-href "/Arise/" # Matches your repo name 'Arise'
         
       - name: Archive Web Build
         run: |
