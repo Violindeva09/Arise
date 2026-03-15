@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../providers/system_provider.dart';
 import '../config/ui_config.dart';
 import '../services/system_audio_service.dart';
@@ -109,9 +111,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSocialButton(String label, IconData icon, Color color) {
     return InkWell(
-      onTap: () {
+      onTap: () async {
         SystemAudioService().playClick();
-        // Social Auth Placeholder
+        if (label == "GOOGLE") {
+          await _handleGoogleSignIn();
+        }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -128,6 +132,45 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        final UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+        final User? user = userCredential.user;
+
+        if (user != null && mounted) {
+          SystemAudioService().playLevelUp();
+          Provider.of<SystemProvider>(context, listen: false).init(
+            user.displayName ?? "Hunter",
+            user.email ?? "",
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("Google Sign-In Error: $e");
+      if (mounted) {
+        SystemAudioService().playAlert();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Authentication Failed: $e"),
+            backgroundColor: AriseUI.danger,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildField(

@@ -29,16 +29,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(system),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               _buildSpecializationTag(workoutType),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
               Expanded(
                 child: GridView.builder(
+                  padding: const EdgeInsets.only(bottom: 16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 6,
                     crossAxisSpacing: 8,
@@ -52,7 +53,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   },
                 ),
               ),
-              if (selectedItem != null) _buildItemDetail(selectedItem, system),
+              if (selectedItem != null) 
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  child: _buildItemDetail(selectedItem, system),
+                ),
             ],
           ),
         ),
@@ -144,51 +149,68 @@ class _InventoryScreenState extends State<InventoryScreen> {
     final isEquipped = system.isEquipped(item);
 
     return Container(
-      margin: const EdgeInsets.only(top: 24),
-      padding: const EdgeInsets.all(20),
-      decoration: AriseUI.glassHUD(),
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: AriseUI.glassHUD().copyWith(
+        border: Border.all(color: AriseUI.primary.withOpacity(0.3)),
+      ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              border: Border.all(color: AriseUI.primary.withOpacity(0.5)),
+              border: Border.all(color: AriseUI.primary.withOpacity(0.4)),
               color: Colors.black,
             ),
             child:
-                Icon(_getItemIcon(item.type), color: AriseUI.primary, size: 40),
+                Icon(_getItemIcon(item.type), color: AriseUI.primary, size: 24),
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(item.name.toUpperCase(),
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            letterSpacing: 1)),
+                    Flexible(
+                      child: Text(item.name.toUpperCase(),
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              letterSpacing: 1)),
+                    ),
                     if (canEquip)
-                      OutlinedButton(
-                        onPressed: () => isEquipped
-                            ? system.unequipItem(item.type)
-                            : system.equipItem(item),
-                        child: Text(isEquipped ? 'UNEQUIP' : 'EQUIP'),
+                      SizedBox(
+                        height: 30,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            side: BorderSide(color: AriseUI.primary, width: 1),
+                          ),
+                          onPressed: () => isEquipped
+                              ? system.unequipItem(item.type)
+                              : system.equipItem(item),
+                          child: Text(isEquipped ? 'UNEQUIP' : 'EQUIP', 
+                            style: const TextStyle(fontSize: 9)),
+                        ),
                       ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 6),
                 Text(item.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                         color: Colors.white54,
-                        fontSize: 10,
-                        height: 1.5,
+                        fontSize: 9,
+                        height: 1.2,
                         fontStyle: FontStyle.italic)),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                     item.statBoost
                         .toJson()
@@ -196,7 +218,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         .where((e) => e.value > 0)
                         .map((e) => '+${e.value} ${e.key.toUpperCase()}')
                         .join('  '),
-                    style: const TextStyle(color: Colors.white70, fontSize: 9)),
+                    style: TextStyle(
+                      color: AriseUI.secondary.withOpacity(0.8), 
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                    )),
               ],
             ),
           ),

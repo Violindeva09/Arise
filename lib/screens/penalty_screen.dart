@@ -1,8 +1,8 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/system_provider.dart';
 import '../config/ui_config.dart';
+import '../data/penalty_data.dart';
 
 class PenaltyScreen extends StatefulWidget {
   final VoidCallback onResolve;
@@ -17,15 +17,26 @@ class _PenaltyScreenState extends State<PenaltyScreen> {
   int _timeLeft = 14400; // 4 hours
   late Timer _timer;
   bool _glitchToggle = false;
+  int _penaltyIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    // Initialize with a random index for variety
+    _penaltyIndex = math.Random().nextInt(PenaltyData.penalties.length);
+    
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
           if (_timeLeft > 0) _timeLeft--;
-          if (timer.tick % 5 == 0) _glitchToggle = !_glitchToggle;
+          
+          // Glitch effect every 5 seconds
+          if (timer.tick % 5 == 0) {
+            _glitchToggle = !_glitchToggle;
+            
+            // Demo Mode: Cycle to next penalty every 5 seconds
+            _penaltyIndex = (_penaltyIndex + 1) % PenaltyData.penalties.length;
+          }
         });
       }
     });
@@ -46,9 +57,6 @@ class _PenaltyScreenState extends State<PenaltyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final system = Provider.of<SystemProvider>(context);
-    final penalty = system.currentPenalty;
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -95,9 +103,10 @@ class _PenaltyScreenState extends State<PenaltyScreen> {
                         fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 32),
-                  if (penalty != null) ...[
+                  const SizedBox(height: 32),
+                  if (PenaltyData.penalties.isNotEmpty) ...[
                     Text(
-                      penalty.title,
+                      PenaltyData.penalties[_penaltyIndex].title,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontSize: 22,
@@ -106,7 +115,7 @@ class _PenaltyScreenState extends State<PenaltyScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      penalty.desc,
+                      PenaltyData.penalties[_penaltyIndex].desc,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontSize: 14,

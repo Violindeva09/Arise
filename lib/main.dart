@@ -19,8 +19,11 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   SystemAudioService().init(); // Non-blocking
   runApp(
     ChangeNotifierProvider(
@@ -109,7 +112,13 @@ class _MainScaffoldState extends State<MainScaffold> {
           SystemParticles(),
 
           // Persistent Holographic Title (Background)
-          Center(child: HolographicTitle()),
+          Align(
+            alignment: Alignment.center,
+            child: Transform.scale(
+              scale: MediaQuery.of(context).size.width < 600 ? 0.7 : 1.0,
+              child: HolographicTitle(),
+            ),
+          ),
 
           IndexedStack(
             index: _selectedIndex,
@@ -129,8 +138,8 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   Widget _buildRealitySync() {
     return Positioned(
-      bottom: 100,
-      left: 24,
+      top: MediaQuery.of(context).padding.top + 10,
+      right: 24,
       child: StreamBuilder(
         stream: Stream.periodic(const Duration(seconds: 1)),
         builder: (context, snapshot) {
@@ -390,7 +399,7 @@ class _HolographicTitleState extends State<HolographicTitle>
                     style: TextStyle(
                       fontSize: 80,
                       fontWeight: FontWeight.w900,
-                      color: AriseUI.primary.withOpacity(0.3),
+                      color: AriseUI.primary.withOpacity(0.15),
                       fontStyle: FontStyle.italic,
                       letterSpacing: -5,
                       shadows: [
