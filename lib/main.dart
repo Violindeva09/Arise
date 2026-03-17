@@ -11,6 +11,8 @@ import 'screens/login_screen.dart';
 import 'screens/awakening_screen.dart';
 import 'config/ui_config.dart';
 import 'config/responsive_hud.dart';
+import 'services/persistence_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'screens/routine_selection_screen.dart';
 
@@ -53,20 +55,62 @@ class AriseApp extends StatelessWidget {
   }
 }
 
-class SystemOrchestrator extends StatelessWidget {
+class SystemOrchestrator extends StatefulWidget {
   const SystemOrchestrator({super.key});
 
   @override
+  State<SystemOrchestrator> createState() => _SystemOrchestratorState();
+}
+
+class _SystemOrchestratorState extends State<SystemOrchestrator> {
+  bool _isCheckingSession = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkInitialSession();
+  }
+
+  Future<void> _checkInitialSession() async {
+    final system = Provider.of<SystemProvider>(context, listen: false);
+    
+    // 1. Check Firebase Auth first
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await system.init(user.displayName ?? "Hunter", user.email ?? "");
+    } else {
+      // 2. Check local session
+      final session = await PersistenceService.getSession();
+      if (session != null) {
+        await system.init(session['name']!, session['email']!);
+      }
+    }
+    
+    if (mounted) {
+      setState(() => _isCheckingSession = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isCheckingSession) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(color: AriseUI.primary),
+        ),
+      );
+    }
+
     final system = Provider.of<SystemProvider>(context);
     final stats = system.stats;
 
-    // 1. Identification Flow
+    // 1. Identification Flow (If no session and no player name)
     if (system.playerName == "Hunter") {
       return const LoginScreen();
     }
 
-    // 2. Penalty Override (The System teleports you out)
+    // 2. Penalty Override
     if (system.isPenaltyActive) {
       return PenaltyScreen(onResolve: () => system.resolvePenalty());
     }

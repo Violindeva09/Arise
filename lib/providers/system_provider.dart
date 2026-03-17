@@ -45,9 +45,14 @@ class SystemProvider with ChangeNotifier {
   int get maxMp => resolvedStats.maxMp;
   double get expProgress => GameLogic.getExpProgress(_stats.exp, _stats.level);
 
-  Future<void> init(String name, String email) async {
+  Future<void> init(String name, String email, {bool rememberMe = false}) async {
     if (name.isEmpty) return;
     _currentUser = name;
+    
+    if (rememberMe) {
+      await PersistenceService.saveSession(name, email);
+    }
+
     final savedState = await PersistenceService.loadPlayerState(name);
     if (savedState != null) {
       _stats = savedState.stats;
@@ -62,6 +67,18 @@ class SystemProvider with ChangeNotifier {
       _updateInventory();
     }
     _startRegenTimer();
+    notifyListeners();
+  }
+
+  Future<void> logout() async {
+    await PersistenceService.clearSession();
+    _currentUser = null;
+    _stats = PlayerStats.defaultStats();
+    _inventory = [];
+    _equippedItems.clear();
+    _questHistory = [];
+    _isPenaltyActive = false;
+    _regenTimer?.cancel();
     notifyListeners();
   }
 

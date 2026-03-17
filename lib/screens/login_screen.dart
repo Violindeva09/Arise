@@ -17,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
+  bool _rememberMe = true;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +44,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
                 _buildField(_passController, "PASSWORD", Icons.lock_outline,
                     isPassword: true),
+                const SizedBox(height: 16),
+                _buildRememberMeToggle(),
                 const SizedBox(height: 48),
                 SizedBox(
                   width: double.infinity,
@@ -57,6 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             .init(
                           _userController.text,
                           _emailController.text,
+                          rememberMe: _rememberMe,
                         );
                       } else {
                         SystemAudioService().playAlert();
@@ -134,6 +138,32 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Widget _buildRememberMeToggle() {
+    return InkWell(
+      onTap: () => setState(() => _rememberMe = !_rememberMe),
+      child: Row(
+        children: [
+          Container(
+            width: 18,
+            height: 18,
+            decoration: BoxDecoration(
+              border: Border.all(color: AriseUI.primary, width: 2),
+              color: _rememberMe ? AriseUI.primary : Colors.transparent,
+            ),
+            child: _rememberMe
+                ? const Icon(Icons.check, size: 14, color: Colors.black)
+                : null,
+          ),
+          const SizedBox(width: 12),
+          Text("REMEMBER_ME",
+              style: AriseUI.label.copyWith(
+                  fontSize: 10,
+                  color: _rememberMe ? AriseUI.primary : Colors.white24)),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleGoogleSignIn() async {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -156,6 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Provider.of<SystemProvider>(context, listen: false).init(
             user.displayName ?? "Hunter",
             user.email ?? "",
+            rememberMe: _rememberMe,
           );
         }
       }

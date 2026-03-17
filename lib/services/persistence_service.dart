@@ -45,6 +45,30 @@ class PersistenceService {
     }
   }
 
+  static Future<void> saveSession(String name, String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("${_keyPrefix}current_user_session", jsonEncode({
+      'name': name,
+      'email': email,
+    }));
+  }
+
+  static Future<Map<String, String>?> getSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    final session = prefs.getString("${_keyPrefix}current_user_session");
+    if (session == null) return null;
+    final Map<String, dynamic> data = jsonDecode(session);
+    return {
+      'name': data['name']?.toString() ?? "",
+      'email': data['email']?.toString() ?? "",
+    };
+  }
+
+  static Future<void> clearSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove("${_keyPrefix}current_user_session");
+  }
+
   static Future<void> savePlayerStats(String playerName, PlayerStats stats) {
     return savePlayerState(
       playerName,
